@@ -1,0 +1,349 @@
+Kobi’s Student Atlas — Complete Mobile App Specification
+1. Executive Summary
+
+Kobi’s Student Atlas is a mobile-first academic companion for students at Babcock University. The app is designed to:
+
+Track courses, organized by semesters
+
+Handle past and current semesters
+
+Automatically calculate grades using the Babcock University grading system
+
+Compute semester GPA and CGPA (current and predicted)
+
+Allow full CRUD operations for semesters and courses
+
+Offer multiple themes and UI modes
+
+Export and backup academic data
+
+Provide offline support with Firebase as the backend
+
+Project Background:
+
+“Student Atlas was an individual project by Kobi Oguadinma, a second-year Software Engineering student at Babcock University. He frequently calculated his predicted grades manually and wanted a mobile app to automate this process.”
+
+2. Academic System (Babcock University)
+Grading Table & GPA Mapping (5-point scale)
+Grade	Score Range	GPA Points	Notes
+A	≥80	5.0	Target grade
+B	60–79	4.0	Target grade
+C	50–59	3.0	Target grade
+D	40–49	2.0	Fail
+E	30–39	1.0	Fail
+F	<30	0.0	Fail
+
+D/E/F grades are included in GPA calculations but cannot be selected as target grades
+
+Only one current semester is allowed at a time
+
+Other academic systems will be supported in future updates
+
+3. Core Features
+3.1 Semester Management
+
+Create semester:
+
+Name (e.g., “200 Level 1st Semester”)
+
+Type: past or current
+
+Past Semester Workflow:
+
+Enter courses, unit hours, and final scores
+
+Grades calculated automatically
+
+Compute semester GPA
+
+Current Semester Workflow:
+
+Enter courses, unit hours, CA scores
+
+Optional final score to convert semester to past
+
+Compute predicted semester GPA
+
+Semester CRUD:
+
+Edit semester name, type
+
+Delete semester with confirmation
+
+Add/remove courses in semester
+
+3.2 Course Management
+
+Each course includes:
+
+Name & Code
+
+CA components: Midterm, Assignment, Quiz, Attendance
+
+Target Grade (A/B/C)
+
+Difficulty (1–5 stars)
+
+Unit Hours
+
+Optional Final Score (for current semester when result is known)
+
+Course CRUD is within semesters
+
+Dynamic exam target table for current semester courses
+
+3.3 GPA & CGPA
+
+Semester GPA: Weighted by unit hours
+
+Semester GPA
+=
+∑
+(
+unit hours
+×
+grade points
+)
+∑
+unit hours
+Semester GPA=
+∑unit hours
+∑(unit hours×grade points)
+	​
+
+
+CGPA: Average of all past semester GPAs
+
+Predicted CGPA: Includes predicted GPA for current semester
+
+3.4 Themes
+
+Default dark
+
+Dark
+
+Blue
+
+Light pink
+
+Light
+
+Settings screen for switching themes dynamically
+
+3.5 Enhancements
+
+Offline caching via AsyncStorage
+
+Export / backup in PDF or JSON
+
+Semester GPA and CGPA visualization: charts, bars, or trend lines
+
+Notifications for current semester CA deadlines
+
+Achievement animations (confetti, badges)
+
+Empty state illustrations for mobile UX
+
+4. Mobile Screens & Components
+Screen / Component	Description
+Dashboard.tsx	Displays all semesters grouped as Past and Current, GPA summary card
+SemesterDetail.tsx	Shows all courses in the semester, semester GPA, predicted GPA (if current)
+CourseDetail.tsx	Edit course info, CA scores, unit hours, optional final score, dynamic grade table
+AddSemesterModal.tsx	Modal for creating past/current semester
+AddCourseModal.tsx	Modal for adding a course to a semester
+GPAView.tsx	Displays all semester GPAs, current CGPA, predicted CGPA, GPA charts
+Settings.tsx	Theme switcher, app info, backup & restore
+About.tsx	Displays origin story and developer info
+5. Technical Architecture
+5.1 Frontend
+
+React Native + TypeScript
+
+React Navigation for stack/tab navigation
+
+Component-based design
+
+Themes via React Context for dynamic switching
+
+Offline support via AsyncStorage
+
+5.2 Backend (Firebase)
+Authentication
+
+Firebase Auth (email/password)
+
+Firestore Database
+users/
+  {userId}/
+    semesters/
+      {semesterId}/
+        name: string
+        type: 'past'|'current'
+        timestamp: number
+        gpa: number
+        predictedGPA?: number
+        courses/
+          {courseId}/
+            name: string
+            code: string
+            unitHours: number
+            caScores: { midterm: number, assignment: number, quiz: number, attendance: number }
+            targetGrade: 'A'|'B'|'C'
+            finalScore?: number
+            grade?: 'A'|'B'|'C'|'D'|'E'|'F'
+            difficulty: 1|2|3|4|5
+
+Firestore Security Rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/semesters/{semesterId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      match /courses/{courseId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
+
+Firebase Integration (Android / Replit)
+// Root build.gradle
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.4")
+    }
+}
+
+// App module build.gradle
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+dependencies {
+    implementation platform("com.google.firebase:firebase-bom:34.6.0")
+    implementation "com.google.firebase:firebase-analytics"
+    implementation "com.google.firebase:firebase-auth"
+    implementation "com.google.firebase:firebase-firestore"
+}
+
+
+google-services.json should be placed in android/app/
+
+Initialize Firebase in firebaseConfig.ts:
+
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+6. Calculations
+6.1 Grade Calculation
+
+Convert final score to Babcock grade
+
+Map grade to 5-point GPA
+
+6.2 Semester GPA
+Semester GPA
+=
+∑
+(
+unit hours
+×
+grade points
+)
+∑
+unit hours
+Semester GPA=
+∑unit hours
+∑(unit hours×grade points)
+	​
+
+6.3 CGPA
+CGPA
+=
+∑
+(
+past semester GPA
+×
+semester units
+)
+∑
+(
+past semester units
+)
+CGPA=
+∑(past semester units)
+∑(past semester GPA×semester units)
+	​
+
+
+Predicted CGPA includes current semester predicted GPA
+
+7. Project Folder Structure
+src/
+  components/
+    Dashboard.tsx
+    SemesterDetail.tsx
+    CourseDetail.tsx
+    AddSemesterModal.tsx
+    AddCourseModal.tsx
+    GPAView.tsx
+    Settings.tsx
+    About.tsx
+  services/
+    semesterService.ts  // CRUD & GPA calculations
+  navigation/
+    AppNavigator.tsx
+  utils/
+    calculations.ts     // grade, semester GPA, CGPA
+  types/
+    index.ts
+  constants/
+    index.ts            // grading system constants
+  firebase/
+    firebaseConfig.ts
+App.tsx
+
+8. Additional Features
+
+Multi-theme support with live preview
+
+Semester progress indicators and charts
+
+Backup/export JSON or PDF for semesters and courses
+
+Notifications/reminders for CA deadlines
+
+Achievement animations for GPA milestones
+
+Empty state illustrations for improved mobile UX
+
+This full specification covers:
+
+Mobile-only app (iOS + Android)
+
+Semester-based course management
+
+Past & current semester logic
+
+Babcock grading system (grades & 5-point GPA)
+
+CGPA & predicted CGPA calculation
+
+Themes, offline support, export, notifications
+
+Firebase integration with auth + Firestore
+
+Project structure for easy Replit agent deployment
