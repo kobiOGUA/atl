@@ -7,22 +7,43 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
 import MainTabNavigator from "@/navigation/MainTabNavigator";
+import AuthNavigator from "@/navigation/AuthNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+
+function AppContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return null;
+  }
+
+  return (
+    <>
+      <NavigationContainer>
+        {user ? <MainTabNavigator /> : <AuthNavigator />}
+      </NavigationContainer>
+      <StatusBar style="auto" />
+    </>
+  );
+}
 
 export default function App() {
   return (
-  <ErrorBoundary>
-    <SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
         <GestureHandlerRootView style={styles.root}>
           <KeyboardProvider>
-            <NavigationContainer>
-              <MainTabNavigator />
-            </NavigationContainer>
-            <StatusBar style="auto" />
+            <ThemeProvider>
+              <AuthProvider>
+                <AppContent />
+              </AuthProvider>
+            </ThemeProvider>
           </KeyboardProvider>
         </GestureHandlerRootView>
       </SafeAreaProvider>
-  </ErrorBoundary>
+    </ErrorBoundary>
   );
 }
 

@@ -13,9 +13,11 @@ import { BorderRadius, Spacing } from "@/constants/theme";
 
 interface ButtonProps {
   onPress?: () => void;
-  children: ReactNode;
+  label?: string;
+  children?: ReactNode;
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
+  variant?: 'primary' | 'secondary' | 'destructive';
 }
 
 const springConfig: WithSpringConfig = {
@@ -30,9 +32,11 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function Button({
   onPress,
+  label,
   children,
   style,
   disabled = false,
+  variant = 'primary',
 }: ButtonProps) {
   const { theme } = useTheme();
   const scale = useSharedValue(1);
@@ -53,6 +57,17 @@ export function Button({
     }
   };
 
+  const getBackgroundColor = () => {
+    if (variant === 'secondary') return theme.backgroundSecondary;
+    if (variant === 'destructive') return theme.error;
+    return theme.primary;
+  };
+
+  const getTextColor = () => {
+    if (variant === 'secondary') return theme.text;
+    return '#FFFFFF';
+  };
+
   return (
     <AnimatedPressable
       onPress={disabled ? undefined : onPress}
@@ -62,7 +77,7 @@ export function Button({
       style={[
         styles.button,
         {
-          backgroundColor: theme.link,
+          backgroundColor: getBackgroundColor(),
           opacity: disabled ? 0.5 : 1,
         },
         style,
@@ -71,9 +86,9 @@ export function Button({
     >
       <ThemedText
         type="body"
-        style={[styles.buttonText, { color: theme.buttonText }]}
+        style={[styles.buttonText, { color: getTextColor() }]}
       >
-        {children}
+        {label || children}
       </ThemedText>
     </AnimatedPressable>
   );

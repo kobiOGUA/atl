@@ -1,30 +1,92 @@
 import { Platform } from "react-native";
 
-const tintColorLight = "#007AFF";
-const tintColorDark = "#0A84FF";
+export type ThemeName = 'defaultDark' | 'dark' | 'blue' | 'lightPink' | 'light';
 
 export const Colors = {
-  light: {
-    text: "#11181C",
+  defaultDark: {
+    text: "#FFFFFF",
+    textSecondary: "#B3B3B3",
     buttonText: "#FFFFFF",
-    tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
-    link: "#007AFF",
-    backgroundRoot: "#FFFFFF", // Elevation 0
-    backgroundDefault: "#F2F2F2", // Elevation 1
-    backgroundSecondary: "#E6E6E6", // Elevation 2
-    backgroundTertiary: "#D9D9D9", // Elevation 3
+    tabIconDefault: "#B3B3B3",
+    tabIconSelected: "#BB86FC",
+    link: "#BB86FC",
+    primary: "#BB86FC",
+    backgroundRoot: "#121212",
+    backgroundDefault: "#1E1E1E",
+    backgroundSecondary: "#2A2A2A",
+    backgroundTertiary: "#353535",
+    success: "#4CAF50",
+    warning: "#FF9800",
+    error: "#F44336",
+    border: "#333333",
   },
   dark: {
-    text: "#ECEDEE",
+    text: "#FFFFFF",
+    textSecondary: "#8E8E93",
     buttonText: "#FFFFFF",
-    tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
+    tabIconDefault: "#8E8E93",
+    tabIconSelected: "#0A84FF",
     link: "#0A84FF",
-    backgroundRoot: "#1F2123", // Elevation 0
-    backgroundDefault: "#2A2C2E", // Elevation 1
-    backgroundSecondary: "#353739", // Elevation 2
-    backgroundTertiary: "#404244", // Elevation 3
+    primary: "#0A84FF",
+    backgroundRoot: "#000000",
+    backgroundDefault: "#1C1C1C",
+    backgroundSecondary: "#2A2A2A",
+    backgroundTertiary: "#353535",
+    success: "#4CAF50",
+    warning: "#FF9800",
+    error: "#F44336",
+    border: "#2C2C2E",
+  },
+  blue: {
+    text: "#1A237E",
+    textSecondary: "#5C6BC0",
+    buttonText: "#FFFFFF",
+    tabIconDefault: "#5C6BC0",
+    tabIconSelected: "#2196F3",
+    link: "#2196F3",
+    primary: "#2196F3",
+    backgroundRoot: "#E3F2FD",
+    backgroundDefault: "#FFFFFF",
+    backgroundSecondary: "#F5F5F5",
+    backgroundTertiary: "#E3F2FD",
+    success: "#4CAF50",
+    warning: "#FF9800",
+    error: "#F44336",
+    border: "#BBDEFB",
+  },
+  lightPink: {
+    text: "#880E4F",
+    textSecondary: "#AD1457",
+    buttonText: "#FFFFFF",
+    tabIconDefault: "#AD1457",
+    tabIconSelected: "#E91E63",
+    link: "#E91E63",
+    primary: "#E91E63",
+    backgroundRoot: "#FCE4EC",
+    backgroundDefault: "#FFFFFF",
+    backgroundSecondary: "#F8BBD0",
+    backgroundTertiary: "#FCE4EC",
+    success: "#4CAF50",
+    warning: "#FF9800",
+    error: "#F44336",
+    border: "#F48FB1",
+  },
+  light: {
+    text: "#000000",
+    textSecondary: "#666666",
+    buttonText: "#FFFFFF",
+    tabIconDefault: "#666666",
+    tabIconSelected: "#6200EE",
+    link: "#6200EE",
+    primary: "#6200EE",
+    backgroundRoot: "#FFFFFF",
+    backgroundDefault: "#F5F5F5",
+    backgroundSecondary: "#EEEEEE",
+    backgroundTertiary: "#E0E0E0",
+    success: "#4CAF50",
+    warning: "#FF9800",
+    error: "#F44336",
+    border: "#E0E0E0",
   },
 };
 
