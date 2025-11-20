@@ -1,76 +1,114 @@
-# Student Atlas
+# Student Atlas - Academic Tracking App
 
 ## Overview
-Student Atlas is a React Native mobile application built with Expo that helps students track their academic journey. The app allows users to manage semesters and courses, calculate GPAs, and predict future academic performance.
-
-**Current State**: Successfully migrated to Replit environment. All dependencies installed and Expo development server running.
-
-## Recent Changes
-- **2025-11-20**: Project imported to Replit
-  - Installed all npm dependencies with `--legacy-peer-deps` flag to resolve react-native-svg-charts version conflicts
-  - Configured workflow to run Expo development server
-  - Expo server running on port 8081 with React Native Web support
-
-## Key Features
-- **Authentication**: Email/password authentication via Firebase Auth
-- **Semester Management**: Add, view, and delete semesters (current/past)
-- **Course Tracking**: Manage courses with CA scores, target grades, and final scores
-- **GPA Calculation**: Automatic calculation of semester GPA, CGPA, and predicted CGPA
-- **Data Export**: Export academic data as JSON backup or PDF report
-- **Theming**: Multiple color themes (Default Dark, Dark, Blue, Light Pink, Light)
-- **Achievements**: Gamification with unlockable achievements for academic milestones
-- **Offline Support**: Local data storage using AsyncStorage
+Student Atlas is a React Native mobile application built with Expo that helps students track their academic journey. Users can manage semesters, courses, calculate GPAs, and monitor their academic performance.
 
 ## Project Architecture
 
 ### Tech Stack
-- **Framework**: React Native 0.81.5 with Expo 54
-- **Navigation**: React Navigation (Native Stack + Bottom Tabs)
-- **Authentication**: Firebase Auth
-- **Storage**: AsyncStorage for offline data persistence
+- **Framework**: React Native with Expo SDK 54
+- **Language**: TypeScript
+- **Navigation**: React Navigation (Tab + Stack navigators)
+- **Authentication**: Firebase Auth (email/password)
+- **Storage**: AsyncStorage (offline-first)
 - **State Management**: React Context API
-- **UI**: Custom theming system with multiple color schemes
-- **PDF Generation**: expo-print
-- **Notifications**: expo-notifications
+- **UI Components**: Custom themed components with multiple color schemes
 
-### Directory Structure
+### Key Features
+1. **Authentication System**: Email/password login via Firebase
+2. **Semester Management**: Add, edit, and track current/past semesters
+3. **Course Tracking**: Manage courses with CA scores, target grades, and final scores
+4. **GPA Calculations**: Automatic CGPA, semester GPA, and predicted CGPA
+5. **Data Export**: Export data as JSON or PDF reports
+6. **Achievements System**: Gamification with unlockable achievements
+7. **Multiple Themes**: 5 color themes (Default Dark, Dark, Blue, Light Pink, Light)
+8. **Offline Support**: All data stored locally with AsyncStorage
+
+## Project Structure
 ```
-├── components/         # Reusable UI components
-├── contexts/          # React context providers (Auth, Theme, Achievement)
-├── hooks/             # Custom React hooks
-├── navigation/        # Navigation structure (Auth, Main Tabs, Stacks)
-├── screens/           # Screen components
-├── services/          # Business logic (Firebase, Storage, Export, Notifications)
-├── types/             # TypeScript type definitions
-├── utils/             # Utility functions (GPA calculations)
-└── constants/         # Theme constants and colors
+├── screens/          # All screen components
+├── navigation/       # Navigation configuration (Tab & Stack)
+├── components/       # Reusable UI components
+├── contexts/         # React Context providers (Auth, Theme, Achievement)
+├── services/         # Business logic (Firebase, Storage, Export, Notifications)
+├── utils/            # Utility functions (GPA calculations)
+├── constants/        # Theme constants and design tokens
+├── types/            # TypeScript type definitions
+└── assets/           # Images, icons, and static files
 ```
 
-### Data Model
-- **Semester**: Contains courses, GPA, type (current/past)
-- **Course**: Includes name, code, units, CA scores, target grade, final score
-- **Grading System**: A (5.0), B (4.0), C (3.0), D (2.0), E (1.0), F (0.0)
+## Recent Changes
+- **2025-11-20**: Successfully imported and configured project on Replit
+  - Installed all dependencies with `--legacy-peer-deps` flag
+  - Configured Expo workflow for development
+  - Added EAS Build configuration for APK generation
 
 ## Development Setup
 
 ### Running the App
-- Development server runs on port 8081
-- Web preview available via React Native Web
-- For mobile testing, use Expo Go app with QR code
+The app runs via Expo development server:
+```bash
+npm run dev
+```
 
-### Known Issues
-- Some packages have version mismatches with Expo 54 (non-breaking)
-- Node version 20.19.3 vs required 20.19.4 (minor version difference, working fine)
+### Testing Options
+1. **Physical Device**: Scan QR code with Expo Go app
+2. **Web Preview**: React Native Web version (browser-based)
+3. **Emulator**: Use Android/iOS emulators (requires setup)
 
-### Firebase Configuration
-Firebase config is hardcoded in `services/firebase.ts` for:
-- Project: kobi-s-student-atlas
-- Authentication enabled
+## Building APK
+
+### Prerequisites
+1. Create a free Expo account at https://expo.dev/signup
+2. EAS CLI is already installed in this project
+
+### Build Steps
+1. Login to Expo:
+   ```bash
+   eas login
+   ```
+
+2. Build APK for testing/distribution:
+   ```bash
+   # For preview/testing build
+   eas build --profile preview --platform android
+   
+   # For production build
+   eas build --profile production --platform android
+   ```
+
+3. Wait for build to complete (10-15 minutes)
+4. Download APK from the provided URL
+5. Install on Android device
+
+### Build Configuration
+- `eas.json` is configured to generate APK files (not AAB)
+- Three build profiles available: development, preview, production
+- All profiles create installable APK files
+
+## Firebase Configuration
+Firebase is configured for authentication with the following services:
+- **Auth Domain**: kobi-s-student-atlas.firebaseapp.com
+- **Project ID**: kobi-s-student-atlas
+
+**Note**: Firebase credentials are public (client-side config) but secured via Firebase security rules.
+
+## Design System
+The app uses a comprehensive design system with:
+- Consistent spacing scale (xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32)
+- Border radius values (sm: 8, md: 12, lg: 16, xl: 24)
+- Typography scale (8 text styles from xs to xxl)
+- 5 complete color themes
 
 ## User Preferences
-None specified yet.
+- None documented yet
 
-## Notes
-- The app uses React Native Web for browser preview on Replit
-- For the most accurate testing, use Expo Go on a physical device
-- All user data is stored locally per user ID from Firebase Auth
+## Known Issues
+- Some package version mismatches (non-critical warnings during npm install)
+- Metro bundler requires Node >= 20.19.4 (currently using 20.19.3, but works)
+
+## Future Enhancements
+- Cloud sync across devices
+- Class scheduling
+- Study timer
+- GPA trend charts
