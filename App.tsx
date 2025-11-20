@@ -11,6 +11,8 @@ import AuthNavigator from "@/navigation/AuthNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { AchievementProvider } from "@/contexts/AchievementContext";
+import { AchievementPopup } from "@/components/AchievementPopup";
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -24,6 +26,7 @@ function AppContent() {
       <NavigationContainer>
         {user ? <MainTabNavigator /> : <AuthNavigator />}
       </NavigationContainer>
+      <AchievementPopup />
       <StatusBar style="auto" />
     </>
   );
@@ -37,7 +40,9 @@ export default function App() {
           <KeyboardProvider>
             <ThemeProvider>
               <AuthProvider>
-                <AppContent />
+                <AchievementProvider>
+                  <AppContent />
+                </AchievementProvider>
               </AuthProvider>
             </ThemeProvider>
           </KeyboardProvider>

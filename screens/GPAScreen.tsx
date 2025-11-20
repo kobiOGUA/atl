@@ -1,20 +1,25 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText';
 import { ScreenScrollView } from '@/components/ScreenScrollView';
+import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { GPATrendChart } from '@/components/GPATrendChart';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useGPAAnalytics } from '@/hooks/useGPAAnalytics';
 import { Spacing, BorderRadius } from '@/constants/theme';
 import { Feather } from '@expo/vector-icons';
 import { getSemesters } from '@/services/storageService';
 import { Semester } from '@/types';
 import { calculateCGPA, calculatePredictedCGPA, getGPAColor } from '@/utils/calculations';
 
-export default function GPAScreen() {
+export default function GPAScreen({ navigation }: any) {
   const { theme } = useTheme();
   const { user } = useAuth();
   const [semesters, setSemesters] = useState<Semester[]>([]);
+  const analytics = useGPAAnalytics(semesters);
 
   useFocusEffect(
     useCallback(() => {
@@ -61,6 +66,21 @@ export default function GPAScreen() {
               </View>
             ) : null}
           </View>
+        ) : null}
+
+        {hasPastSemesters && analytics.trendData.length > 0 ? (
+          <Card style={styles.trendCard}>
+            <View style={styles.trendHeader}>
+              <ThemedText type="subtitle" style={{ color: theme.text }}>GPA Trend</ThemedText>
+              <Pressable onPress={() => navigation.navigate('AnalyticsDashboard')}>
+                <View style={styles.viewAllButton}>
+                  <ThemedText style={[styles.viewAllText, { color: theme.primary }]}>View Analytics</ThemedText>
+                  <Feather name="chevron-right" size={16} color={theme.primary} />
+                </View>
+              </Pressable>
+            </View>
+            <GPATrendChart data={analytics.trendData.slice(-5)} />
+          </Card>
         ) : null}
 
         <View style={styles.section}>
@@ -132,6 +152,25 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
     alignItems: 'center',
     gap: Spacing.sm,
+  },
+  trendCard: {
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  trendHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  viewAllText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   summaryLabel: {
     fontSize: 14,

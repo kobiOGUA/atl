@@ -6,6 +6,7 @@ import { ScreenScrollView } from '@/components/ScreenScrollView';
 import { Button } from '@/components/Button';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAchievements } from '@/contexts/AchievementContext';
 import { Spacing, BorderRadius } from '@/constants/theme';
 import { Feather } from '@expo/vector-icons';
 import { getSemesters, deleteSemester } from '@/services/storageService';
@@ -17,12 +18,14 @@ export default function SemesterDetailScreen({ route, navigation }: any) {
   const { semesterId } = route.params;
   const { theme } = useTheme();
   const { user } = useAuth();
+  const { checkAchievements } = useAchievements();
   const { paddingBottom } = useScreenInsets();
   const [semester, setSemester] = useState<Semester | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       loadSemester();
+      checkAchievements();
     }, [semesterId, user])
   );
 

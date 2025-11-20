@@ -6,6 +6,7 @@ import { getCommonScreenOptions } from "./screenOptions";
 import SettingsScreen from "@/screens/SettingsScreen";
 import AccountScreen from "@/screens/AccountScreen";
 import AboutScreen from "@/screens/AboutScreen";
+import DataManagementScreen from "@/screens/DataManagementScreen";
 
 export type SettingsStackParamList = {
   Settings: undefined;
@@ -34,6 +35,11 @@ export default function SettingsStackNavigator() {
         name="About"
         component={AboutScreen}
         options={{ title: "About", headerTransparent: false }}
+      />
+      <Stack.Screen
+        name="DataManagement"
+        component={DataManagementScreen}
+        options={{ title: "Data Management", headerTransparent: false }}
       />
     </Stack.Navigator>
   );

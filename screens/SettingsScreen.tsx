@@ -42,6 +42,16 @@ export default function SettingsScreen({ navigation }: any) {
         </View>
 
         <View style={styles.section}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>Data</ThemedText>
+          <SettingsItem
+            icon="download"
+            label="Export & Backup"
+            theme={theme}
+            onPress={() => navigation.navigate('DataManagement')}
+          />
+        </View>
+
+        <View style={styles.section}>
           <ThemedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>Account</ThemedText>
           <SettingsItem
             icon="user"

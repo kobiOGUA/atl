@@ -138,3 +138,24 @@ export async function deleteCourse(
 
   await saveSemesters(userId, semesters);
 }
+
+export async function deleteSemesters(userId: string): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(`${SEMESTERS_KEY}${userId}`);
+  } catch (error) {
+    console.error('Failed to delete semesters:', error);
+    throw error;
+  }
+}
+
+export const storageService = {
+  getSemesters,
+  saveSemesters,
+  createSemester,
+  updateSemester,
+  deleteSemester,
+  addCourse,
+  updateCourse,
+  deleteCourse,
+  deleteSemesters,
+};

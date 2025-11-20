@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "955486974004",
+    "project_id": "kobi-s-student-atlas",
+    "storage_bucket": "kobi-s-student-atlas.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:955486974004:android:7c401e00c4da91db3c5a61",
+        "android_client_info": {
+          "package_name": "com.kobiogua.studentatlas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpshRp_PX3ven5n7z4CwrzsGytpatew38"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

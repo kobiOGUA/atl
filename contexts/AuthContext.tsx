@@ -1,5 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  deleteUser as firebaseDeleteUser,
+  User as FirebaseUser
+} from 'firebase/auth';
+import { auth } from '@/services/firebase';
+import { storageService } from '@/services/storageService';
 
 interface User {
   uid: string;
@@ -17,59 +26,65 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = '@student_atlas_user';
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadUser();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email || '',
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe;
   }, []);
 
-  const loadUser = async () => {
-    try {
-      const savedUser = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
-    } catch (error) {
-      console.error('Failed to load user:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const signIn = async (email: string, password: string) => {
-    const trimmedEmail = email.trim().toLowerCase();
-    const userId = `user_${Date.now()}`;
-    const newUser = { uid: userId, email: trimmedEmail };
-    
-    await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newUser));
-    await AsyncStorage.setItem(`@password_${trimmedEmail}`, password);
-    setUser(newUser);
+    try {
+      const trimmedEmail = email.trim().toLowerCase();
+      await signInWithEmailAndPassword(auth, trimmedEmail, password);
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found') {
+        throw new Error('No account found with this email');
+      } else if (error.code === 'auth/wrong-password') {
+        throw new Error('Incorrect password');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email address');
+      } else if (error.code === 'auth/invalid-credential') {
+        throw new Error('Invalid email or password');
+      } else {
+        throw new Error(error.message || 'Failed to sign in');
+      }
+    }
   };
 
   const signUp = async (email: string, password: string) => {
-    const trimmedEmail = email.trim().toLowerCase();
-    const existingPassword = await AsyncStorage.getItem(`@password_${trimmedEmail}`);
-    
-    if (existingPassword) {
-      throw new Error('An account with this email already exists');
+    try {
+      const trimmedEmail = email.trim().toLowerCase();
+      await createUserWithEmailAndPassword(auth, trimmedEmail, password);
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        throw new Error('An account with this email already exists');
+      } else if (error.code === 'auth/weak-password') {
+        throw new Error('Password should be at least 6 characters');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email address');
+      } else {
+        throw new Error(error.message || 'Failed to create account');
+      }
     }
-    
-    const userId = `user_${Date.now()}`;
-    const newUser = { uid: userId, email: trimmedEmail };
-    
-    await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newUser));
-    await AsyncStorage.setItem(`@password_${trimmedEmail}`, password);
-    setUser(newUser);
   };
 
   const signOut = async () => {
     try {
-      await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
-      setUser(null);
+      await firebaseSignOut(auth);
     } catch (error) {
       console.error('Failed to sign out:', error);
       throw error;
@@ -78,11 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const deleteAccount = async () => {
     try {
-      if (user) {
-        await AsyncStorage.removeItem(`@password_${user.email}`);
-        await AsyncStorage.removeItem(`@semesters_${user.uid}`);
-        await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
-        setUser(null);
+      if (auth.currentUser && user) {
+        await storageService.deleteSemesters(user.uid);
+        await firebaseDeleteUser(auth.currentUser);
       }
     } catch (error) {
       console.error('Failed to delete account:', error);
