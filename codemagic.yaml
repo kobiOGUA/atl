@@ -16,7 +16,3 @@ workflows:
     artifacts:
       - build/**/*.apk
       - build/**/*.aab
-    publishing:
-      email:
-        recipients:
-          - $CODEMAGIC_EMAIL
